@@ -33,28 +33,31 @@ function BlogPage() {
   const commentContext = useContext(CommentContext);
 
   const getAuthorName = () => {
-    let username = ""
+    let username = "";
+    // eslint-disable-next-line
     authContext.users.map((user) => {
-        if (user.id === blogContext.blog.user_id) {
-            username = user.username;
-        }
-        })
-    return username
+      if (user.id === blogContext.blog.user_id) {
+        username = user.username;
+      }
+    });
+    return username;
   }
 
   const getCommentAuthorName = () => {
     let username = "";
+    // eslint-disable-next-line
     authContext.users.map((user) => {
-      let Comment = {}
+      let Comment = {};
+      // eslint-disable-next-line
       commentContext.comments.map((comment) => {
         if (blogContext.blog.id === comment.blog_id) {
-          Comment = comment
+          Comment = comment;
         }
-      })
-    if (Comment.user_id === user.id) {
-        username = user.username
-    }
-    })
+      });
+      if (Comment.user_id === user.id) {
+        username = user.username;
+      }
+    });
     return username;
   };
 
