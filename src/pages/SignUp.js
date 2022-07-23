@@ -9,16 +9,13 @@ import {
 import React, { useContext } from "react";
 import LockOpenIcon from "@mui/icons-material/LockOpen";
 import { AuthContext } from "../context/AuthContext";
-import { useNavigate } from "react-router-dom";
-import { Add } from "@mui/icons-material";
+import AddBlog from "../shared/AddBlog";
 
 function SignUp() {
-  let navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const handleSubmit = (event) => {
     event.preventDefault();
     const values = {
-      name: event.target.name.value,
       username: event.target.username.value,
       email: event.target.email.value,
       password: event.target.password.value,
@@ -45,15 +42,6 @@ function SignUp() {
             Create an Account
           </Typography>
           <Box component="form" onSubmit={handleSubmit}>
-            <TextField
-              label="Name"
-              name="name"
-              variant="outlined"
-              color="secondary"
-              fullWidth
-              required
-              sx={{ m: 1 }}
-            />
             <TextField
               label="User Name"
               name="username"
@@ -111,31 +99,7 @@ function SignUp() {
           </Box>
         </Box>
       ) : (
-        <Box>
-          <Typography
-            variant="h5"
-            component="h2"
-            gutterBottom
-            style={{ textAlign: "center" }}
-            sx={{ m: 3 }}
-          >
-            {" "}
-            Welcome {authContext.user.username}{" "}
-          </Typography>
-          <Button
-            type="submit"
-            color="secondary"
-            size="md"
-            variant="contained"
-            fullWidth
-            disableElevation
-            onClick={() => navigate("/addBlogs")}
-            endIcon={<Add />}
-            sx={{ m: 1 }}
-          >
-            Add Blogs
-          </Button>
-        </Box>
+        <AddBlog />
       )}
     </Container>
   );

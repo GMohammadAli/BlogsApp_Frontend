@@ -6,15 +6,19 @@ const BlogContext = createContext();
 
 function BlogProvider({ children }) {
   const authContext = useContext(AuthContext);
+  const [isBlogPresent, setIsBlogPresent] = useState(false)
   const [blog, setBlog] = useState({});
   const [blogs, setBlogs] = useState([]);
-   const headers = {
-     Authorization: authContext.token,
-     "Content-Type": "application/json",
-   };
+  const headers = {
+    "Authorization": authContext.token,
+    "Content-Type": "application/json",
+  };
 
-   useEffect(()=>{
-     getBlogs()
+   useEffect(() => {
+     if (authContext.isAuth) {
+       getBlogs();
+     }
+     // eslint-disable-next-line
    },[])
 
   //  Function - Route - Method
@@ -23,27 +27,27 @@ function BlogProvider({ children }) {
     await axios
       .get(
         `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs`,
-        {headers}
+        { headers }
       )
       .then((response) => {
-        setBlogs(response.data);
-        console.log(response.data);
+        setBlogs(response.data)
+        setIsBlogPresent(true)
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
       });
   };
 
   //getBlog - url/users/{user.id}/blogs/{blog.id} - GET
-  const getBlog = async (blog) => {
+  const getBlog = async (id) => {
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blog.id}`,
-        headers
+        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${id}`,
+        {headers}
       )
       .then((response) => {
-        setBlog(response.data);
-        console.log(response.data);
+        setBlog(response.data)
+        setIsBlogPresent(true);
       })
       .catch((err) => {
         console.log(err);
@@ -58,9 +62,8 @@ function BlogProvider({ children }) {
          blog,
          {headers}
        )
-       .then((response) => {
+       .then(() => {
          getBlogs()
-         console.log(response.data)
        })
        .catch((err) => {
          console.log(err);
@@ -73,8 +76,8 @@ function BlogProvider({ children }) {
   const updateBlog = async (blog) => {
     await axios
         .put(`${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blog.id}`,
-        headers,
-        blog
+        blog,
+        { headers }
         )
         .then(response => {
             console.log(response.data)
@@ -89,16 +92,15 @@ function BlogProvider({ children }) {
   //deleteBlog - url/users/{user.id}/blogs/{blog.id} - DELETE
   const deleteBlog = async (blog) => {
     await axios
-      .put(
+      .delete(
         `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blog.id}`,
-        headers
+       {headers}
       )
-      .then((response) => {
-        console.log(response.data);
-        getBlogs();
+      .then(() => {
+        getBlogs()
       })
       .catch((err) => {
-        console.log(err);
+        console.log(err)
       });
   };
 
@@ -107,6 +109,7 @@ function BlogProvider({ children }) {
       value={{
         blog: blog,
         blogs: blogs,
+        isBlogPresent : isBlogPresent,
         getBlog: getBlog,
         getBlogs: getBlogs,
         addBlog: addBlog,
@@ -119,6 +122,5 @@ function BlogProvider({ children }) {
   );
 }
 
-export default BlogProvider;
-export { BlogContext };
-
+export default BlogProvider
+export { BlogContext }

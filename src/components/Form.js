@@ -1,27 +1,52 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   Box,
   Button,
   TextField,
 } from "@mui/material";
 import AddIcon from "@mui/icons-material/Add";
+import UpgradeIcon from "@mui/icons-material/Upgrade";
 import { useNavigate } from "react-router-dom";
 import { BlogContext } from "../context/BlogContext";
 
 
-function Form({blog , form}) {
+function Form({blogId , form}) {
   let navigate = useNavigate();
   const blogContext = useContext(BlogContext);
+  const [blog, setBlog] = useState({})
+  useEffect(() => {
+    if (form === "editForm") {
+      blogContext.getBlog(blogId);
+    }
+    // eslint-disable-next-line
+  },[])
+
+  //to make it asynchronous
+  useEffect(()=> (setBlog(blogContext.blog)), 
+  [blogContext.blog]
+  )
+  
+  const handleTitleChange = (e) => {
+    setBlog({...blog, title: e.target.value})
+  }
+  const handleDescChange = (e)=> {
+      setBlog({ ...blog, description: e.target.value })
+  }
+
+
   const handleSubmit = (event) => {
     event.preventDefault();
     const values = {
-      title: event.target.title.value,
-      description: event.target.description.value
+      id: blogId,
+      title: blog.title,
+      description: blog.description,
     };
     if(form === 'addForm'){
+      console.log("ADDED")
       blogContext.addBlog(values)
     }else if ( form === "editForm"){
-      blogContext.updateBlog(values); 
+      console.log("UPDATED")
+      blogContext.updateBlog(values)
     }
     navigate("/");
   };
@@ -33,7 +58,8 @@ function Form({blog , form}) {
         name="title"
         variant="outlined"
         color="secondary"
-        defaultValue={blog ? blog.title: ""}
+        value={blog.title || ""}
+        onChange={handleTitleChange}
         fullWidth
         required
         sx={{ m: 1 }}
@@ -42,24 +68,40 @@ function Form({blog , form}) {
         label="Description"
         name="description"
         variant="outlined"
-        defaultValue={blog ? (blog.description) : ""}
+        value={blog.description || ""}
         color="secondary"
+        onChange={handleDescChange}
         fullWidth
         required
         sx={{ m: 1 }}
       />
-      <Button
-        type="submit"
-        color="secondary"
-        size="md"
-        variant="contained"
-        fullWidth
-        disableElevation
-        endIcon={<AddIcon />}
-        sx={{ m: 1 }}
-      >
-        Add Blog
-      </Button>
+      {form === "editForm" ? (
+        <Button
+          type="submit"
+          color="secondary"
+          size="md"
+          variant="contained"
+          fullWidth
+          disableElevation
+          endIcon={<UpgradeIcon />}
+          sx={{ m: 1 }}
+        >
+          Update Blog
+        </Button>
+      ) : (
+        <Button
+          type="submit"
+          color="secondary"
+          size="md"
+          variant="contained"
+          fullWidth
+          disableElevation
+          endIcon={<AddIcon />}
+          sx={{ m: 1 }}
+        >
+          Add Blog
+        </Button>
+      )}
     </Box>
   );
 }

@@ -6,10 +6,18 @@ const AuthContext = createContext();
 function AuthProvider({ children }) {
   const [isAuth, setIsAuth] = useState(false);
   const [user, setUser] = useState({});
+  const [users ,setUsers] = useState([])
   const [token, setToken] = useState("");
+  const headers = {
+    Authorization: token,
+    "Content-Type": "application/json",
+  };
 
   useEffect(() => {
-    loginUser()
+    if (isAuth) {
+      loginUser();
+    }
+    // eslint-disable-next-line
   }, [])
 
   const registerUser = async (user) => {
@@ -39,6 +47,16 @@ function AuthProvider({ children }) {
       });
   };
 
+  const getUsers = async () => {
+    await axios.get(`${process.env.REACT_APP_BACKEND_URL}/users/`, {headers})
+    .then(response => {
+        setUsers(response.data)
+    })
+    .catch((err) => {
+      console.log(err)
+    })
+  }
+
   const logout = () => {
     setIsAuth(false);
     setUser({});
@@ -50,7 +68,9 @@ function AuthProvider({ children }) {
       value={{
         isAuth: isAuth,
         user: user,
+        users :users,
         token: token,
+        getUsers :getUsers,
         registerUser: registerUser,
         loginUser: loginUser,
         logout: logout,
