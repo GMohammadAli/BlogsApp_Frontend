@@ -1,5 +1,5 @@
-import { Card, Button, CardContent, CardMedia, Typography, Grid, Box ,Container } from '@mui/material';
-import React, { useContext, useEffect} from 'react'
+import { Card, Button, CardContent, CardMedia, Typography, Grid, Box ,Container, Badge } from '@mui/material';
+import React, { useContext, useEffect, useState} from 'react'
 import BlogImage from "../assets/design-blogs.jpg"
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -10,16 +10,20 @@ import {  useNavigate } from 'react-router-dom';
 import { LikeContext } from '../context/LikeContext';
 import { CommentContext } from '../context/CommentContext';
 
-function IndividualCard() {
+function Cards() {
   let navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const blogContext = useContext(BlogContext);
   const likeContext = useContext(LikeContext);
   const commentContext = useContext(CommentContext);
-  let isLiked = false;
-  const handleClick = () => {
-    // setIsLiked(true)
-    console.log("Like Clicked");
+  // const [isLiked, setisLiked] = useState(false)
+  let isLiked = false
+
+  const handleLikeBtnClick = (blogId) => {
+    // setisLiked(true)
+    likeContext.addLike(blogId,{
+      liked_by : authContext.user.id
+    })
   };
 
   function getNoOfLikes(blogId) {
@@ -47,14 +51,15 @@ function IndividualCard() {
   // eslint-disable-next-line
   const getIsLiked = (blog) => {
     console.log(blog.id);
-    likeContext.likes.map((like) =>
-      like.blog_id === blog.id && authContext.user.id === like.user_id
-        ? (isLiked = true)
-        : (isLiked = false)
-    );
+    // likeContext.likes.map((like) =>
+    //   like.blog_id === blog.id && authContext.user.id === like.user_id
+    //     ? (setisLiked (true))
+    //     : (setisLiked(false))
+    // );
   };
 
   useEffect(() => {
+    // setisLiked(false)
     blogContext.getBlogs();
     likeContext.getLikes();
     commentContext.getComments();
@@ -72,7 +77,7 @@ function IndividualCard() {
             justifyContent: "center",
             alignContent: "center",
           }}
-          spacing={6}
+          spacing={4}
         >
           {blogContext.blogs.map((blog) => (
             <Grid item xs={4} key={blog.id}>
@@ -103,22 +108,27 @@ function IndividualCard() {
                 >
                   <Grid item xs={5}>
                     {isLiked ? (
-                      <Button startIcon={<FavoriteIcon />} sx={{ m: 1 }}>
-                        Likes : {getNoOfLikes(blog.id)}
+                      <Button startIcon={<FavoriteIcon />} sx={{ m: 2 }}>
+                        {getNoOfLikes(blog.id)} Likes
                       </Button>
                     ) : (
                       <Button
                         startIcon={<FavoriteBorderIcon />}
-                        onClick={handleClick}
-                        sx={{ m: 1 }}
+                        onClick={handleLikeBtnClick(blog.id)}
+                        sx={{ m: 2 }}
                       >
-                        Likes : {getNoOfLikes(blog.id)}
+                        {getNoOfLikes(blog.id)} Likes
                       </Button>
                     )}
                   </Grid>
                   <Grid item xs={7}>
-                    <Button startIcon={<ModeCommentIcon />} sx={{ m: 1 }}>
-                      Comments : {getNoOfComments(blog.id)}
+                    <Button startIcon={<ModeCommentIcon />} sx={{ m: 2 }}>
+                      <Badge
+                        badgeContent={getNoOfComments(blog.id)}
+                        color="secondary"
+                      >
+                        Comments
+                      </Badge>
                     </Button>
                   </Grid>
                 </Grid>
@@ -152,7 +162,7 @@ function IndividualCard() {
                     </Grid>
                   </Grid>
                 ) : (
-                  console.log()
+                  console.log("Not the Author")
                 )}
               </Card>
             </Grid>
@@ -163,4 +173,4 @@ function IndividualCard() {
   );
 }
 
-export default IndividualCard
+export default Cards

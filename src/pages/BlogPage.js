@@ -1,6 +1,6 @@
-import { DeleteOutlined, EditOutlined } from "@mui/icons-material";
+import { Add, DeleteOutlined, EditOutlined, FavoriteBorder, Upgrade } from "@mui/icons-material";
 import {
-    Avatar,
+  Avatar,
   Box,
   // eslint-disable-next-line
   Button,
@@ -16,8 +16,8 @@ import {
   TextField,
   Typography,
 } from "@mui/material";
-import React, { useContext, useEffect } from "react";
-import { useParams } from "react-router-dom";
+import React, { useContext, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { BlogContext } from "../context/BlogContext";
 import { CommentContext } from "../context/CommentContext";
@@ -27,10 +27,13 @@ import Person from "@mui/icons-material/Person";
 
 function BlogPage() {
   const { blog_id } = useParams();
+  let navigate = useNavigate()
   const authContext = useContext(AuthContext);
   const blogContext = useContext(BlogContext);
   const likeContext = useContext(LikeContext);
   const commentContext = useContext(CommentContext);
+  const [isSetToUpdate, setisSetToUpdate] = useState(false)
+  const [comment , setComment] = useState({})
 
   const getAuthorName = () => {
     let username = "";
@@ -61,28 +64,84 @@ function BlogPage() {
     return username;
   };
 
+  const handleClick = () => {
+    console.log("Liked Blog")
+  }
+
+  function getNoOfLikes(blogId) {
+    let count = 0;
+    // eslint-disable-next-line
+    likeContext.likes.map((like) => {
+      // eslint-disable-next-line
+      if (like.blog_id == blogId) {
+        count++;
+      }
+    });
+    return count;
+  }
+
+  const onFormSubmit = (event) => {
+    event.preventDefault()
+    if(event.target.name === "Update") {
+      commentContext.updateComment({
+        id: comment.id,
+        description: event.target.description.value,
+      })
+    }else{
+      commentContext.addComment({
+        description: event.target.description.value,
+      })
+    }
+    if (isSetToUpdate) {
+      setisSetToUpdate(false);
+    }
+    event.target.description.value = ""
+    navigate(`/blog/${blog_id}`)
+  }
+
+  const handleDescChange = (e) => {
+    setComment({ ...comment , description: e.target.value });
+  };
+
+
   useEffect(() => {
-    blogContext.getBlog(blog_id);
-    likeContext.getLikes();
-    commentContext.getComments();
-    authContext.getUsers()
+    // blogContext.getBlog(blog_id)
+    // likeContext.getLikes()
+    // commentContext.getComments()
+    // authContext.getUsers()
     // eslint-disable-next-line
   }, []);
 
   return (
-    <Container maxWidth="md">
+    <Container maxWidth="lg">
       {authContext.isAuth ? (
         <Box>
           <Card>
-            <Typography
-              variant="h4"
-              component="h2"
-              gutterBottom
-              style={{ textAlign: "center" }}
-              sx={{ m: 3 }}
-            >
-              {blogContext.blog.title}
-            </Typography>
+            <CardHeader
+              action={
+                <Button
+                  startIcon={<FavoriteBorder />}
+                  onClick={handleClick}
+                  sx={{ m: 2 }}
+                  size="large"
+                  variant="contained"
+                  color="secondary"
+                >
+                  {getNoOfLikes(blog_id)}
+                </Button>
+              }
+              title={
+                <Typography
+                  variant="h4"
+                  component="h2"
+                  gutterBottom
+                  style={{ textAlign: "center" }}
+                  sx={{ m: 3 }}
+                >
+                  {blogContext.blog.title}
+                </Typography>
+              }
+            />
             <Typography variant="h6" component="h1" gutterBottom sx={{ m: 3 }}>
               {blogContext.blog.description}
             </Typography>
@@ -99,9 +158,13 @@ function BlogPage() {
           {commentContext.comments.map((comment) => (
             <Box sx={{ mt: 2 }}>
               {comment.blog_id === blogContext.blog.id ? (
-                <Card elevation={1}>
+                <Card elevation={1} key={comment.id}>
                   <CardHeader
-                    avatar={<Avatar><Person /></Avatar>}
+                    avatar={
+                      <Avatar>
+                        <Person />
+                      </Avatar>
+                    }
                     action={
                       <ButtonGroup>
                         <IconButton
@@ -110,13 +173,15 @@ function BlogPage() {
                           <DeleteOutlined />
                         </IconButton>
                         <IconButton
-                        // onClick={() => {
-                        //   commentContext.comment = {
-                        //     id: comment.id,
-                        //     description: comment.description
-                        //   };
-                        //   navigate("/updatecomment");
-                        // }}
+                          onClick={() => {
+                            setisSetToUpdate(true)
+                            const values = {
+                              id: comment.id,
+                              description: comment.description,
+                            }
+                            setComment(values)
+                            commentContext.comment(values)
+                          }}
                         >
                           <EditOutlined />
                         </IconButton>
@@ -135,6 +200,97 @@ function BlogPage() {
               )}
             </Box>
           ))}
+          <Box>
+            {!isSetToUpdate ? (
+              <Box
+                component="form"
+                border={1}
+                borderRadius={3}
+                sx={{ m: 3 }}
+                maxWidth="lg"
+                onSubmit={onFormSubmit}
+              >
+                <Typography
+                  variant="h5"
+                  color="textSecondary"
+                  style={{ textAlign: "center" }}
+                  gutterBottom
+                  sx={{ m: 2 }}
+                >
+                  Add a Comment
+                </Typography>
+                <TextField
+                  label="Comment"
+                  variant="outlined"
+                  name="description"
+                  color="secondary"
+                  style={{ width: "-webkit-fill-available" }}
+                  fullWidth
+                  required
+                  sx={{ m: 2 }}
+                />
+                <Button
+                  type="submit"
+                  color="secondary"
+                  size="large"
+                  variant="contained"
+                  fullWidth
+                  disableElevation
+                  style={{ width: "-webkit-fill-available" }}
+                  endIcon={<Add />}
+                  sx={{ m: 1 }}
+                >
+                  Add Comment
+                </Button>
+                {/* )} */}
+              </Box>
+            ) : (
+              <Box
+                component="form"
+                name="Update"
+                border={1}
+                borderRadius={3}
+                sx={{ m: 3 }}
+                maxWidth="lg"
+                onSubmit={onFormSubmit}
+              >
+                <Typography
+                  variant="h5"
+                  color="textSecondary"
+                  style={{ textAlign: "center" }}
+                  gutterBottom
+                  sx={{ m: 2 }}
+                >
+                  Update Comment
+                </Typography>
+                <TextField
+                  label="Comment"
+                  variant="outlined"
+                  name="description"
+                  onChange={handleDescChange}
+                  value={comment.description || ""}
+                  color="secondary"
+                  style={{ width: "-webkit-fill-available" }}
+                  fullWidth
+                  required
+                  sx={{ m: 2 }}
+                />
+                <Button
+                  type="submit"
+                  color="secondary"
+                  size="md"
+                  variant="contained"
+                  style={{ width: "-webkit-fill-available" }}
+                  fullWidth
+                  disableElevation
+                  endIcon={<Upgrade />}
+                  sx={{ m: 1 }}
+                >
+                  Update Blog
+                </Button>
+              </Box>
+            )}
+          </Box>
         </Box>
       ) : (
         <LogInAsk />

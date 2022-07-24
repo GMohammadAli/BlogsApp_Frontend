@@ -61,7 +61,7 @@ function CommentProvider({ children }) {
   const addComment = async (comment) => {
     await axios
       .post(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/comments/${comment.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/comments/`,
         comment,
         { headers }
       )
@@ -82,7 +82,6 @@ function CommentProvider({ children }) {
         { headers }
       )
       .then((response) => {
-        console.log(response.data);
         getComments();
       })
       .catch((err) => {

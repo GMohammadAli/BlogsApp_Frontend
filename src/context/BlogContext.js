@@ -15,7 +15,7 @@ function BlogProvider({ children }) {
   };
 
    useEffect(() => {
-     if (authContext.isAuth) {
+     if (authContext.isAuth && blogs.length === 0) {
        getBlogs();
      }
      // eslint-disable-next-line

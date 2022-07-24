@@ -31,11 +31,12 @@ function LikeProvider({ children }) {
   const getLikes = async () => {
     await axios
       .get(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/likes/`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/likes`,
         { headers }
       )
       .then((response) => {
         setLikes(response.data);
+        console.log(response.data)
       })
       .catch((err) => {
         console.log(err);
@@ -45,15 +46,15 @@ function LikeProvider({ children }) {
   //getLike - process.env.REACT_APP_BACKEND_URL/users/${user.id}/blogs/${blog.id}/likes/${like.id} - GET - No Need
 
   //addLike - process.env.REACT_APP_BACKEND_URL/users/${user.id}/blogs/${blog.id}/likes/${like.id} - POST
-  const addLike = async (like) => {
+  const addLike = async (blogId , like) => {
     await axios
       .post(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/likes/${like.id}`,
+        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogId}/likes`,
         like,
         { headers }
       )
       .then(() => {
-        getLikes();
+        getLikes()
       })
       .catch((err) => {
         console.log(err);
