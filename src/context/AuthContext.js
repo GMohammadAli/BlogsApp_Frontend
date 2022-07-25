@@ -1,4 +1,4 @@
-import React, { createContext, useState , useEffect } from "react";
+import React, { createContext, useState } from "react";
 import axios from "axios";
 
 const AuthContext = createContext();
@@ -12,13 +12,6 @@ function AuthProvider({ children }) {
     Authorization: token,
     "Content-Type": "application/json",
   };
-
-  useEffect(() => {
-    if (isAuth) {
-      loginUser();
-    }
-    // eslint-disable-next-line
-  }, [])
 
   const registerUser = async (user) => {
     await axios

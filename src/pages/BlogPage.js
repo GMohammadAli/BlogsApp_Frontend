@@ -1,4 +1,4 @@
-import { Add, DeleteOutlined, EditOutlined, FavoriteBorder, Upgrade } from "@mui/icons-material";
+import { Add, DeleteOutlined, EditOutlined, Favorite, FavoriteBorder, Upgrade } from "@mui/icons-material";
 import {
   Avatar,
   Box,
@@ -21,16 +21,14 @@ import { useNavigate, useParams } from "react-router-dom";
 import { AuthContext } from "../context/AuthContext";
 import { BlogContext } from "../context/BlogContext";
 import { CommentContext } from "../context/CommentContext";
-import { LikeContext } from "../context/LikeContext";
 import LogInAsk from "../shared/LogInAsk";
 import Person from "@mui/icons-material/Person";
 
 function BlogPage() {
-  const { blog_id } = useParams();
+  const { blog_id , isLiked} = useParams();
   let navigate = useNavigate()
   const authContext = useContext(AuthContext);
   const blogContext = useContext(BlogContext);
-  const likeContext = useContext(LikeContext);
   const commentContext = useContext(CommentContext);
   const [isSetToUpdate, setisSetToUpdate] = useState(false)
   const [comment , setComment] = useState({})
@@ -64,14 +62,16 @@ function BlogPage() {
     return username;
   };
 
-  const handleClick = () => {
-    console.log("Liked Blog")
-  }
+  const handleLikeBtnClick = (blogId) => {
+    blogContext.addLike(blogId, {
+      liked_by: authContext.user.id,
+    })
+  };
 
   function getNoOfLikes(blogId) {
     let count = 0;
     // eslint-disable-next-line
-    likeContext.likes.map((like) => {
+    blogContext.likes.map((like) => {
       // eslint-disable-next-line
       if (like.blog_id == blogId) {
         count++;
@@ -96,7 +96,7 @@ function BlogPage() {
       setisSetToUpdate(false);
     }
     event.target.description.value = ""
-    navigate(`/blog/${blog_id}`)
+    navigate(`/blog/${blog_id}/${isLiked}`)
   }
 
   const handleDescChange = (e) => {
@@ -105,10 +105,8 @@ function BlogPage() {
 
 
   useEffect(() => {
-    // blogContext.getBlog(blog_id)
-    // likeContext.getLikes()
-    // commentContext.getComments()
-    // authContext.getUsers()
+    blogContext.getBlog(blog_id)
+    authContext.getUsers()
     // eslint-disable-next-line
   }, []);
 
@@ -116,33 +114,50 @@ function BlogPage() {
     <Container maxWidth="lg">
       {authContext.isAuth ? (
         <Box>
-          <Card>
+          <Card style={{ backgroundColor: "#e3e0d5" }}>
             <CardHeader
               action={
-                <Button
-                  startIcon={<FavoriteBorder />}
-                  onClick={handleClick}
-                  sx={{ m: 2 }}
-                  size="large"
-                  variant="contained"
-                  color="secondary"
-                >
-                  {getNoOfLikes(blog_id)}
-                </Button>
+                isLiked === "1" ? (
+                  <Button
+                    startIcon={<Favorite />}
+                    sx={{ m: 2 }}
+                    color="secondary"
+                    variant="outlined"
+                  >
+                    {getNoOfLikes(blogContext.blog.id)}
+                  </Button>
+                ) : (
+                  <Button
+                    startIcon={<FavoriteBorder />}
+                    onClick={() => {
+                      handleLikeBtnClick(blogContext.blog.id);
+                    }}
+                    sx={{ m: 2 }}
+                    color="secondary"
+                    variant="contained"
+                  >
+                    {getNoOfLikes(blogContext.blog.id)}
+                  </Button>
+                )
               }
               title={
                 <Typography
                   variant="h4"
                   component="h2"
                   gutterBottom
-                  style={{ textAlign: "center" }}
+                  style={{ textAlign: "center", color: "#E85A4F" }}
                   sx={{ m: 3 }}
                 >
                   {blogContext.blog.title}
                 </Typography>
               }
             />
-            <Typography variant="h6" component="h1" gutterBottom sx={{ m: 3 }}>
+            <Typography
+              variant="h6"
+              component="h1"
+              gutterBottom
+              sx={{ m: 3, color: "#8E8D8A" }}
+            >
               {blogContext.blog.description}
             </Typography>
             <Typography
@@ -158,7 +173,11 @@ function BlogPage() {
           {commentContext.comments.map((comment) => (
             <Box sx={{ mt: 2 }}>
               {comment.blog_id === blogContext.blog.id ? (
-                <Card elevation={1} key={comment.id}>
+                <Card
+                  elevation={1}
+                  key={comment.id}
+                  style={{ backgroundColor: "#e3e0d5" }}
+                >
                   <CardHeader
                     avatar={
                       <Avatar>
@@ -174,13 +193,13 @@ function BlogPage() {
                         </IconButton>
                         <IconButton
                           onClick={() => {
-                            setisSetToUpdate(true)
+                            setisSetToUpdate(true);
                             const values = {
                               id: comment.id,
                               description: comment.description,
-                            }
-                            setComment(values)
-                            commentContext.comment(values)
+                            };
+                            setComment(values);
+                            commentContext.comment(values);
                           }}
                         >
                           <EditOutlined />

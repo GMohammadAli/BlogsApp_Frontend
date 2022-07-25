@@ -1,5 +1,5 @@
 import { Card, Button, CardContent, CardMedia, Typography, Grid, Box ,Container, Badge } from '@mui/material';
-import React, { useContext, useEffect, useState} from 'react'
+import React, { useContext, useEffect} from 'react'
 import BlogImage from "../assets/design-blogs.jpg"
 import ModeCommentIcon from "@mui/icons-material/ModeComment";
 import FavoriteBorderIcon from "@mui/icons-material/FavoriteBorder";
@@ -7,29 +7,24 @@ import { BlogContext } from '../context/BlogContext';
 import FavoriteIcon from "@mui/icons-material/Favorite";
 import { AuthContext } from '../context/AuthContext';
 import {  useNavigate } from 'react-router-dom';
-import { LikeContext } from '../context/LikeContext';
 import { CommentContext } from '../context/CommentContext';
 
 function Cards() {
   let navigate = useNavigate();
   const authContext = useContext(AuthContext);
   const blogContext = useContext(BlogContext);
-  const likeContext = useContext(LikeContext);
   const commentContext = useContext(CommentContext);
-  // const [isLiked, setisLiked] = useState(false)
-  let isLiked = false
 
   const handleLikeBtnClick = (blogId) => {
-    // setisLiked(true)
-    likeContext.addLike(blogId,{
-      liked_by : authContext.user.id
-    })
+    blogContext.addLike(blogId, {
+      liked_by: authContext.user.id,
+    });
   };
 
   function getNoOfLikes(blogId) {
     let count = 0
     // eslint-disable-next-line
-    likeContext.likes.map((like) => {
+    blogContext.likes.map((like) => {
       if (like.blog_id === blogId) {
         count++
       }
@@ -48,21 +43,22 @@ function Cards() {
     return count
   }
 
-  // eslint-disable-next-line
+ 
   const getIsLiked = (blog) => {
-    console.log(blog.id);
-    // likeContext.likes.map((like) =>
-    //   like.blog_id === blog.id && authContext.user.id === like.user_id
-    //     ? (setisLiked (true))
-    //     : (setisLiked(false))
-    // );
+    // eslint-disable-next-line
+    blogContext.likes.map((like) => {
+      if (like.blog_id === blog.id && authContext.user.id === like.user_id) {
+        blog.isLiked = "1";
+      }
+    });
   };
 
   useEffect(() => {
-    // setisLiked(false)
     blogContext.getBlogs();
-    likeContext.getLikes();
-    commentContext.getComments();
+    blogContext.getLikes();
+    if (blogContext.isBlogPresent) {
+      commentContext.getComments();
+    }
     // eslint-disable-next-line
   }, []);
 
@@ -88,15 +84,21 @@ function Cards() {
                   image={BlogImage}
                   alt="blogImage"
                 />
+                {getIsLiked(blog)}
                 <CardContent
                   onClick={() => {
-                    navigate(`/blog/${blog.id}`);
+                    navigate(`/blog/${blog.id}/${blog.isLiked}`);
                   }}
                 >
-                  <Typography gutterBottom variant="h5" component="div">
-                    {blog.title} - {blog.id}
+                  <Typography
+                    gutterBottom
+                    variant="h5"
+                    component="div"
+                    sx={{ textAlign: "center", color: "#E85A4F" }}
+                  >
+                    {blog.title}
                   </Typography>
-                  <Typography variant="body2" color="text.secondary">
+                  <Typography variant="body2" sx={{ m:1, color: "#8E8D8A" }}>
                     {blog.description}
                   </Typography>
                 </CardContent>
@@ -107,22 +109,33 @@ function Cards() {
                   aria-label="outlined primary button group"
                 >
                   <Grid item xs={5}>
-                    {isLiked ? (
-                      <Button startIcon={<FavoriteIcon />} sx={{ m: 2 }}>
+                    {blog.isLiked === "1" ? (
+                      <Button
+                        startIcon={<FavoriteIcon />}
+                        sx={{ m: 2 }}
+                        color="secondary"
+                      >
                         {getNoOfLikes(blog.id)} Likes
                       </Button>
                     ) : (
                       <Button
                         startIcon={<FavoriteBorderIcon />}
-                        onClick={handleLikeBtnClick(blog.id)}
+                        onClick={() => {
+                          handleLikeBtnClick(blog.id);
+                        }}
                         sx={{ m: 2 }}
+                        color="secondary"
                       >
                         {getNoOfLikes(blog.id)} Likes
                       </Button>
                     )}
                   </Grid>
                   <Grid item xs={7}>
-                    <Button startIcon={<ModeCommentIcon />} sx={{ m: 2 }}>
+                    <Button
+                      startIcon={<ModeCommentIcon />}
+                      sx={{ m: 2 }}
+                      color="secondary"
+                    >
                       <Badge
                         badgeContent={getNoOfComments(blog.id)}
                         color="secondary"
@@ -145,6 +158,7 @@ function Cards() {
                           navigate(`/updateBlog/${blog.id}`);
                         }}
                         sx={{ mx: 3, my: 1 }}
+                        color="secondary"
                       >
                         Update
                       </Button>
@@ -156,13 +170,14 @@ function Cards() {
                           navigate("/");
                         }}
                         sx={{ mx: 3, my: 1 }}
+                        color="secondary"
                       >
                         Delete
                       </Button>
                     </Grid>
                   </Grid>
                 ) : (
-                  console.log("Not the Author")
+                  console.log()
                 )}
               </Card>
             </Grid>
