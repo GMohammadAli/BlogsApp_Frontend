@@ -62,21 +62,21 @@ function LikeProvider({ children }) {
   };
 
   //updateLike - process.env.REACT_APP_BACKEND_URL/users/${user.id}/blogs/${blog.id}/likes/${like.id} - PUT/PATCH
-  const updateLike = async (like) => {
-    await axios
-      .put(
-        `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/likes/${like.id}`,
-        like,
-        { headers }
-      )
-      .then((response) => {
-        console.log(response.data);
-        getLikes();
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
+  // const updateLike = async (like) => {
+  //   await axios
+  //     .put(
+  //       `${process.env.REACT_APP_BACKEND_URL}/users/${authContext.user.id}/blogs/${blogContext.blog.id}/likes/${like.id}`,
+  //       like,
+  //       { headers }
+  //     )
+  //     .then((response) => {
+  //       console.log(response.data);
+  //       getLikes();
+  //     })
+  //     .catch((err) => {
+  //       console.log(err);
+  //     });
+  // };
 
   //deleteLike - process.env.REACT_APP_BACKEND_URL/users/${user.id}/blogs/${blog.id}/likes/${like.id} - DELETE
   const deleteLike = async (like) => {
@@ -100,7 +100,7 @@ function LikeProvider({ children }) {
         likes: likes,
         getLikes: getLikes,
         addLike: addLike,
-        updateLike: updateLike,
+        // updateLike: updateLike,
         deleteLike: deleteLike,
       }}
     >
