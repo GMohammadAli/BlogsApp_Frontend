@@ -15,6 +15,7 @@ import {
   // eslint-disable-next-line
   TextField,
   Typography,
+  Divider
 } from "@mui/material";
 import React, { useContext, useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
@@ -62,10 +63,11 @@ function BlogPage() {
     return username;
   };
 
-  const handleLikeBtnClick = (blogId) => {
-    blogContext.addLike(blogId, {
+  const handleLikeBtnClick = async (blogId) => {
+    await blogContext.addLike(blogId, {
       liked_by: authContext.user.id,
     })
+    navigate(`/blog/${blogId}/${isLiked}`)
   };
 
   function getNoOfLikes(blogId) {
@@ -121,6 +123,9 @@ function BlogPage() {
                   <Button
                     startIcon={<Favorite />}
                     sx={{ m: 2 }}
+                    onClick={() => {
+                      alert("The Blog is Already Liked!");
+                    }}
                     color="secondary"
                     variant="outlined"
                   >
@@ -146,12 +151,14 @@ function BlogPage() {
                   component="h2"
                   gutterBottom
                   style={{ textAlign: "center", color: "#E85A4F" }}
-                  sx={{ m: 3 }}
+                  sx={{ m: 2 }}
                 >
                   {blogContext.blog.title}
                 </Typography>
               }
+              sx={{ backgroundColor: "#D7D5CB" }}
             />
+            <Divider />
             <Typography
               variant="h6"
               component="h1"
@@ -224,6 +231,7 @@ function BlogPage() {
               <Box
                 component="form"
                 border={1}
+                borderColor={"#aaa"}
                 borderRadius={3}
                 sx={{ m: 3 }}
                 maxWidth="lg"

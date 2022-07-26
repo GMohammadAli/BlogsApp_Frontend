@@ -98,7 +98,7 @@ function Cards() {
                   >
                     {blog.title}
                   </Typography>
-                  <Typography variant="body2" sx={{ m:1, color: "#8E8D8A" }}>
+                  <Typography variant="body2" sx={{ m: 1, color: "#8E8D8A" }}>
                     {blog.description}
                   </Typography>
                 </CardContent>
@@ -114,6 +114,9 @@ function Cards() {
                         startIcon={<FavoriteIcon />}
                         sx={{ m: 2 }}
                         color="secondary"
+                        onClick={() => {
+                          alert("The Blog is Already Liked!");
+                        }}
                       >
                         {getNoOfLikes(blog.id)} Likes
                       </Button>
@@ -157,7 +160,7 @@ function Cards() {
                         onClick={() => {
                           navigate(`/updateBlog/${blog.id}`);
                         }}
-                        sx={{ mx: 3, my: 1 }}
+                        sx={{ mx: 2, my: 1 }}
                         color="secondary"
                       >
                         Update

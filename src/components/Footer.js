@@ -14,19 +14,25 @@ function Footer() {
     >
       <Grid container spacing={3}>
         <Grid item xs={5}>
-          <Typography sx={{ m: 2, textAlign: "center" }}>
+          <Typography sx={{ m: 2, textAlign: "center" }} color="textSecondary">
             Copyright <sup>©</sup> 2022 All rights reserved
           </Typography>
         </Grid>
         <Grid item xs={7}>
           <Grid container>
             <Grid item xs={6}>
-              <Typography sx={{ m: 2, textAlign: "right" }}>
+              <Typography
+                sx={{ m: 2, textAlign: "right" }}
+                color="textSecondary"
+              >
                 Privacy policy
               </Typography>
             </Grid>
             <Grid item xs={6}>
-              <Typography sx={{ m: 2, textAlign: "center" }}>
+              <Typography
+                sx={{ m: 2, textAlign: "center" }}
+                color="textSecondary"
+              >
                 Terms & condition
               </Typography>
             </Grid>

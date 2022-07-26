@@ -1,4 +1,4 @@
-import React, { useContext } from "react";
+import React, { useContext, useEffect } from "react";
 import {
   AppBar,
   Button,
@@ -14,7 +14,10 @@ import { AuthContext } from "../context/AuthContext";
 
 function Navbar() {
   const authContext = useContext(AuthContext);
+  let isBlog = true ;
   let navigate = useNavigate();
+
+
   return (
     <AppBar position="static">
       <Toolbar>

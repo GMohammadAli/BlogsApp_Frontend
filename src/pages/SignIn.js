@@ -10,9 +10,11 @@ import React, { useContext } from "react";
 import LoginIcon from "@mui/icons-material/Login";
 import { AuthContext } from "../context/AuthContext";
 import AddBlog from "../shared/AddBlog";
+import { useNavigate } from "react-router-dom";
 
 function SignIn() {
   const authContext = useContext(AuthContext);
+  let navigate = useNavigate()
   const handleSubmit = (event) => {
     event.preventDefault();
     const values = {
@@ -20,6 +22,7 @@ function SignIn() {
       password: event.target.password.value,
     };
     authContext.loginUser(values);
+    navigate('/')
   };
   return (
     <Container
