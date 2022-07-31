@@ -1,17 +1,25 @@
 import React, { createContext, useState } from "react";
 import axios from "axios";
+import { useLocalStorage } from "../Hooks/useLocalStorage";
 
 const AuthContext = createContext();
 
 function AuthProvider({ children }) {
-  const [isAuth, setIsAuth] = useState(false);
-  const [user, setUser] = useState({});
+  const [user, setUser] = useLocalStorage("user",{});
   const [users ,setUsers] = useState([])
-  const [token, setToken] = useState("");
+  const [token, setToken] = useLocalStorage("token", "");
   const headers = {
     Authorization: token,
     "Content-Type": "application/json",
   };
+  
+  const [isAuth, setIsAuth] = useState(() => {
+    if( user != null && token !== ""){
+      return true
+    }else {
+      return false
+    }
+  });
 
   const registerUser = async (user) => {
     await axios
